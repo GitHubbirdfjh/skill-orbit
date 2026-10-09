@@ -9,6 +9,7 @@
 
 <p align="center">
   <a href="LICENSE"><img alt="License: MIT" src="https://img.shields.io/badge/license-MIT-69e3cc?style=flat-square"></a>
+  <a href="https://github.com/GitHubbirdfjh/skill-orbit/actions/workflows/ci.yml"><img alt="Checks" src="https://img.shields.io/github/actions/workflow/status/GitHubbirdfjh/skill-orbit/ci.yml?branch=main&amp;style=flat-square&amp;label=checks"></a>
   <img alt="Python 3.10+" src="https://img.shields.io/badge/python-3.10%2B-a59aff?style=flat-square">
   <img alt="Local first" src="https://img.shields.io/badge/local-first-69e3cc?style=flat-square">
   <img alt="One dependency" src="https://img.shields.io/badge/dependencies-1-a59aff?style=flat-square">

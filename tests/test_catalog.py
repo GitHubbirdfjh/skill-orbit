@@ -214,6 +214,29 @@ class CatalogTests(unittest.TestCase):
         runtime.write_text(json.dumps({"pid": 99999, "heartbeat": 0, "interval": 2}), encoding="utf-8")
         self.assertIsNone(running(self.project))
 
+    def test_sync_waits_for_short_cross_process_lock(self):
+        self.skill()
+        init(self.project)
+        ready = self.project / "locked"
+        code = (
+            "from pathlib import Path; import time; from skillorbit.cli import sync_lock\n"
+            f"with sync_lock(Path({str(self.project)!r})):\n"
+            f" Path({str(ready)!r}).touch()\n time.sleep(0.4)\n"
+        )
+        process = subprocess.Popen([sys.executable, "-c", code])
+        try:
+            deadline = time.monotonic() + 4
+            while not ready.exists() and time.monotonic() < deadline:
+                time.sleep(0.02)
+            self.assertTrue(ready.exists())
+            sync(self.project)
+            process.wait(timeout=3)
+            self.assertEqual(process.returncode, 0)
+        finally:
+            if process.poll() is None:
+                process.terminate()
+                process.wait(timeout=3)
+
 
 if __name__ == "__main__":
     unittest.main()

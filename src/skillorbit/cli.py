@@ -104,14 +104,20 @@ def sync_lock(project):
     with (folder / "sync.lock").open("a+b") as stream:
         if os.name == "nt":
             import msvcrt
+            stream.seek(0, os.SEEK_END)
+            if stream.tell() == 0:
+                stream.write(b"0")
+                stream.flush()
             stream.seek(0)
-            stream.write(b"0")
-            stream.flush()
-            stream.seek(0)
-            try:
-                msvcrt.locking(stream.fileno(), msvcrt.LK_NBLCK, 1)
-            except OSError as exc:
-                raise OrbitError("Another sync is active; try again shortly") from exc
+            deadline = time.monotonic() + 5
+            while True:
+                try:
+                    msvcrt.locking(stream.fileno(), msvcrt.LK_NBLCK, 1)
+                    break
+                except OSError as exc:
+                    if time.monotonic() >= deadline:
+                        raise OrbitError("Another sync is active; try again shortly") from exc
+                    time.sleep(0.05)
             try:
                 yield
             finally:
@@ -119,10 +125,15 @@ def sync_lock(project):
                 msvcrt.locking(stream.fileno(), msvcrt.LK_UNLCK, 1)
         else:
             import fcntl
-            try:
-                fcntl.flock(stream, fcntl.LOCK_EX | fcntl.LOCK_NB)
-            except BlockingIOError as exc:
-                raise OrbitError("Another sync is active; try again shortly") from exc
+            deadline = time.monotonic() + 5
+            while True:
+                try:
+                    fcntl.flock(stream, fcntl.LOCK_EX | fcntl.LOCK_NB)
+                    break
+                except BlockingIOError as exc:
+                    if time.monotonic() >= deadline:
+                        raise OrbitError("Another sync is active; try again shortly") from exc
+                    time.sleep(0.05)
             try:
                 yield
             finally:
@@ -482,6 +493,9 @@ def running(project):
 
 
 def start(project):
+    if running(project):
+        print("Already watching")
+        return 0
     with sync_lock(project):
         if running(project):
             print("Already watching")
