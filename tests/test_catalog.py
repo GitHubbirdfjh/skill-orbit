@@ -9,6 +9,7 @@ import sys
 import tempfile
 import time
 import unittest
+from unittest import mock
 
 from skillorbit.cli import CONFIG, OrbitError, init, load_json, scan, config_for, sync, start, stop, running
 
@@ -201,6 +202,16 @@ class CatalogTests(unittest.TestCase):
             self.assertIn("| `two`", self.output.read_text())
         finally:
             stop(self.project)
+        self.assertIsNone(running(self.project))
+
+    def test_fresh_heartbeat_with_denied_pid_probe(self):
+        self.skill()
+        init(self.project)
+        runtime = self.project / ".skillorbit/runtime.json"
+        runtime.write_text(json.dumps({"pid": 99999, "heartbeat": time.time(), "interval": 2}))
+        with mock.patch("skillorbit.cli.os.kill", side_effect=PermissionError):
+            self.assertIsNotNone(running(self.project))
+        runtime.write_text(json.dumps({"pid": 99999, "heartbeat": 0, "interval": 2}))
         self.assertIsNone(running(self.project))
 
 

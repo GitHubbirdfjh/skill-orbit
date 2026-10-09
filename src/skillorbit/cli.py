@@ -472,8 +472,12 @@ def running(project):
         return None
     try:
         os.kill(runtime["pid"], 0)
-    except (ProcessLookupError, PermissionError, KeyError):
+    except (ProcessLookupError, KeyError):
         return None
+    except PermissionError:
+        # Sandboxed hosts may deny a PID probe even when the watcher is alive.
+        # The fresh project-owned heartbeat still provides evidence of liveness.
+        pass
     return runtime
 
 
