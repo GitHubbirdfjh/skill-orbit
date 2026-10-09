@@ -582,6 +582,9 @@ def service(project, action):
 
 
 def main(argv=None):
+    for stream in (sys.stdout, sys.stderr):
+        if hasattr(stream, "reconfigure"):
+            stream.reconfigure(encoding="utf-8", errors="backslashreplace")
     parser = argparse.ArgumentParser(prog="skillorbit", description="A living Markdown directory for your project's AI skills.")
     parser.add_argument("--version", action="version", version=f"SkillOrbit {__version__}")
     parser.add_argument("--project", type=Path, default=Path.cwd(), help="Project directory (default: current directory)")
