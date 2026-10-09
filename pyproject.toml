@@ -1,0 +1,30 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "skillorbit"
+version = "0.1.0"
+description = "A living Markdown directory for your project's AI skills."
+readme = "README.md"
+requires-python = ">=3.10"
+license = "MIT"
+authors = [{name = "GitHubbirdfjh"}]
+dependencies = ["PyYAML>=6.0,<7"]
+keywords = ["codex", "claude", "skills", "markdown", "automation"]
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "Operating System :: OS Independent",
+  "Topic :: Utilities",
+]
+
+[project.urls]
+Homepage = "https://github.com/GitHubbirdfjh/skill-orbit"
+Repository = "https://github.com/GitHubbirdfjh/skill-orbit"
+Issues = "https://github.com/GitHubbirdfjh/skill-orbit/issues"
+
+[project.scripts]
+skillorbit = "skillorbit.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]

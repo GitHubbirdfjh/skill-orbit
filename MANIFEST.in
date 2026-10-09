@@ -1,0 +1,5 @@
+include LICENSE README.md README_EN.md
+recursive-include docs *.md *.svg
+recursive-include tests *.py
+recursive-include examples *.md
+include examples/demo/.agents/skills/orbit-demo/SKILL.md

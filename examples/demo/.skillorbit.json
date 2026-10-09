@@ -1,0 +1,10 @@
+{
+  "version": 1,
+  "roots": [
+    ".agents/skills"
+  ],
+  "output": "SKILLS.md",
+  "interval": 2,
+  "project_rules": [],
+  "descriptions": {}
+}
